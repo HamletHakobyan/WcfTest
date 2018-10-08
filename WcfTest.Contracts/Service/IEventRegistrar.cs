@@ -3,9 +3,10 @@
 namespace WcfTest.Contracts.Service
 {
     [ServiceContract]
-    public interface IEventPublisher
+    public interface IEventRegistrar
     {
         [OperationContract]
-        void Publish<T>(T @event) where T : IEvent;
+        void Register();
+
     }
 }

@@ -1,19 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ServiceModel;
 using System.Threading.Tasks;
-using WcfTest.Contracts;
+using WcfTest.Contracts.Data;
 using WcfTest.Contracts.Service;
 
 namespace WcfTest.Service
 {
     public class MyService : IMyService
     {
-        public async Task<int> GetAgeAsync()
+        private IMyServiceCallback _callback;
+        public async Task<DoubleReturned> GetAgeAsync()
+        {
+            _callback = OperationContext.Current.GetCallbackChannel<IMyServiceCallback>();
+            OperationContext.Current.OperationCompleted += Current_OperationCompleted;
+            await Task.Delay(2000);
+            return new DoubleReturned{DoubledValue = 84};
+        }
+
+        private async void Current_OperationCompleted(object sender, EventArgs e)
         {
             await Task.Delay(2000);
-            return 42;
+            _callback.Publish(typeof(TrippleReturned).FullName, new TrippleReturned { TrippleValue = 3 * 42 });
         }
     }
 }

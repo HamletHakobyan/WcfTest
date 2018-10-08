@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ServiceModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WcfTest.Clinet;
+using WcfTest.Clinet.Callbacks;
+using WcfTest.Contracts.Data;
 
 namespace WcfConsumer
 {
@@ -28,10 +18,13 @@ namespace WcfConsumer
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var proxy = new MyServiceClinet();
+            var eventBroker = new EventBroker();
+            var callback = new MyServiceCallback(eventBroker);
+            var proxy = new MyServiceClinet(new InstanceContext(callback));
 
+            eventBroker.Subscribe<TrippleReturned>(d => AgeBox.Text = d.TrippleValue.ToString());
             var age = await proxy.GetAgeAsync();
-            AgeBox.Text = age.ToString();
+            AgeBox.Text = age.DoubledValue.ToString();
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
+using WcfTest.Contracts.Data;
 
 namespace WcfTest.Contracts.Service
 {
-    [ServiceContract]
+    [ServiceContract(CallbackContract = typeof(IMyServiceCallback))]
     public interface IMyService
     {
         [OperationContract]
-        Task<int> GetAgeAsync();
+        Task<DoubleReturned> GetAgeAsync();
     }
 }

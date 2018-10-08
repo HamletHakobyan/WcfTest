@@ -42,8 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventPublisher.cs" />
-    <Compile Include="EventSubscriberClient.cs" />
+    <Compile Include="Callbacks\IEventBroker.cs" />
+    <Compile Include="Callbacks\MyServiceCallback.cs" />
     <Compile Include="MyServiceClinet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,5 +53,6 @@
       <Name>WcfTest.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
