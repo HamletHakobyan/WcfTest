@@ -3,7 +3,7 @@ using WcfTest.Contracts.Service;
 
 namespace WcfTest.Service
 {
-    public class EventRegistrar : IEventRegistrar
+    public class EventHandlerSource : IEventHandlerSource
     {
         public void Register()
         {

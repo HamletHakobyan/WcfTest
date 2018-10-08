@@ -6,6 +6,5 @@ namespace WcfTest.Contracts.Data
     [KnownType(typeof(TrippleReturned))]
     public class EventDataBase
     {
-        
     }
 }

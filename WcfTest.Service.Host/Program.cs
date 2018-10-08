@@ -16,13 +16,18 @@ namespace WcfTest.Service.Host
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<MyService>().AsSelf();
-            builder.RegisterType<EventRegistrar>().AsSelf().As<IEventRegistrar>().SingleInstance();
+            builder.RegisterType<EventHandlerSource>()
+                .AsSelf()
+                .As<IEventHandlerSource>()
+                .As<IEventHandlerRegistrar>()
+                .SingleInstance();
+            builder.RegisterType<EventPublisher>().As<IEventPublisher>();
             var container = builder.Build();
             var host = new ServiceHost(typeof(MyService));
             host.AddDependencyInjectionBehavior(typeof(MyService),container);
             host.Open();
-            host = new ServiceHost(typeof(EventRegistrar));
-            host.AddDependencyInjectionBehavior(typeof(EventRegistrar), container);
+            host = new ServiceHost(typeof(EventHandlerSource));
+            host.AddDependencyInjectionBehavior(typeof(EventHandlerSource), container);
             host.Open();
             Console.WriteLine("Service started. Press Enter to stop the service.");
             Console.ReadLine();

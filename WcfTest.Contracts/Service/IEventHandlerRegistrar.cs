@@ -3,12 +3,9 @@
 namespace WcfTest.Contracts.Service
 {
     [ServiceContract(CallbackContract = typeof(IEventHandler))]
-    public interface IEventRegistrar
+    public interface IEventHandlerRegistrar
     {
         [OperationContract]
         void Register();
-
-        IEventHandler CallbackChannel { get; }
-
     }
 }

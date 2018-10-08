@@ -6,21 +6,19 @@ using WcfTest.Contracts.Service;
 
 namespace WcfTest.Service
 {
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)]
     public class MyService : IMyService
     {
-        private readonly IEventRegistrar _eventSource;
+        private readonly IEventPublisher _eventPublisher;
 
-        public MyService(IEventRegistrar eventSource)
+        public MyService(IEventPublisher eventPublisher)
         {
-            _eventSource = eventSource;
+            _eventPublisher = eventPublisher;
         }
 
-        private IEventHandler Handler => _eventSource.CallbackChannel;
 
         public async Task<DoubleReturned> GetAgeAsync()
         {
-            Handler?.Publish(typeof(TrippleReturned).FullName, new TrippleReturned{TrippleValue = 500});
+            _eventPublisher.Publish(new TrippleReturned{TrippleValue = 500});
             OperationContext.Current.OperationCompleted += Current_OperationCompleted;
             await Task.Delay(2000);
             return new DoubleReturned{DoubledValue = 84};
@@ -29,7 +27,7 @@ namespace WcfTest.Service
         private async void Current_OperationCompleted(object sender, EventArgs e)
         {
             await Task.Delay(2000);
-            Handler?.Publish(typeof(TrippleReturned).FullName, new TrippleReturned { TrippleValue = 3 * 42 });
+            _eventPublisher.Publish(new TrippleReturned { TrippleValue = 3 * 42 });
         }
 
    }

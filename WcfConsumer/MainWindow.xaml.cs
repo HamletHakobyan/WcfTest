@@ -1,8 +1,10 @@
 ﻿using System.ServiceModel;
 using System.Windows;
+using Autofac;
 using WcfTest.Clinet;
 using WcfTest.Clinet.Callbacks;
 using WcfTest.Contracts.Data;
+using WcfTest.Contracts.Service;
 
 namespace WcfConsumer
 {
@@ -14,7 +16,7 @@ namespace WcfConsumer
         private readonly IEventBroker _eventBroker;
         public MainWindow()
         {
-            _eventBroker = new EventBroker();
+            _eventBroker = AutofacBootstrapper.GetContainer().Resolve<EventHandler>().Broker;
 
             InitializeComponent();
         }

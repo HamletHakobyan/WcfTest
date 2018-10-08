@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using WcfTest.Contracts.Data;
+using WcfTest.Contracts.Service;
 
 namespace WcfTest.Clinet.Callbacks
 {
     public class EventBroker : IEventBroker
     {
-        public EventBroker()
-        {
-            new ServiceEventHandler(this);
-        }
         private readonly List<Delegate> _subscribers = new List<Delegate>();
         public void Publish<T>(T @event) where T : EventDataBase
         {

@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using WcfTest.Contracts.Data;
 using WcfTest.Contracts.Service;
 
 namespace WcfTest.Clinet.Callbacks
 {
-    public class ServiceEventHandler : IEventHandler
+    public class EventHandler : IEventHandler
     {
-        private readonly IEventBroker _eventBroker;
-
-        public ServiceEventHandler(IEventBroker eventBroker)
+        public EventHandler(IEventBroker eventBroker)
         {
-            new EventSourceClient(this).Register();
-            _eventBroker = eventBroker;
+            new EventHandlerRegistrarClient(this).Register();
+            Broker = eventBroker;
         }
         public void Publish(string typeFullName, EventDataBase trippleReturned)
         {
@@ -26,7 +23,9 @@ namespace WcfTest.Clinet.Callbacks
             }
             var method = typeof(IEventBroker).GetMethod("Publish");
             var generic = method?.MakeGenericMethod(type);
-            generic?.Invoke(_eventBroker, new object[] { trippleReturned });
+            generic?.Invoke(Broker, new object[] { trippleReturned });
         }
+
+        public IEventBroker Broker { get; }
     }
 }

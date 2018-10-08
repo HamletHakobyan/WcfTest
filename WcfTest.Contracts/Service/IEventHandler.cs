@@ -4,7 +4,6 @@ using WcfTest.Contracts.Data;
 
 namespace WcfTest.Contracts.Service
 {
-    [ServiceContract]
     public interface IEventHandler
     {
         [OperationContract]
