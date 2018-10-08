@@ -48,7 +48,7 @@
     <Compile Include="Data\TrippleReturned.cs" />
     <Compile Include="Service\IMyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\IMyServiceCallback.cs" />
+    <Compile Include="Service\IEventHandler.cs" />
     <Compile Include="Service\IEventRegistrar.cs" />
   </ItemGroup>
   <ItemGroup />

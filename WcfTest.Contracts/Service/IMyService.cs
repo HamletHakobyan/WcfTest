@@ -4,7 +4,7 @@ using WcfTest.Contracts.Data;
 
 namespace WcfTest.Contracts.Service
 {
-    [ServiceContract(CallbackContract = typeof(IMyServiceCallback))]
+    [ServiceContract]
     public interface IMyService
     {
         [OperationContract]

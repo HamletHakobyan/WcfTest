@@ -6,12 +6,13 @@ using WcfTest.Contracts.Service;
 
 namespace WcfTest.Clinet.Callbacks
 {
-    public class MyServiceCallback : IMyServiceCallback
+    public class ServiceEventHandler : IEventHandler
     {
         private readonly IEventBroker _eventBroker;
 
-        public MyServiceCallback(IEventBroker eventBroker)
+        public ServiceEventHandler(IEventBroker eventBroker)
         {
+            new EventSourceClient(this).Register();
             _eventBroker = eventBroker;
         }
         public void Publish(string typeFullName, EventDataBase trippleReturned)

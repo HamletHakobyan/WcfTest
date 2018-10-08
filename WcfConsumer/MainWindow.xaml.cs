@@ -11,18 +11,19 @@ namespace WcfConsumer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly IEventBroker _eventBroker;
         public MainWindow()
         {
+            _eventBroker = new EventBroker();
+
             InitializeComponent();
         }
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var eventBroker = new EventBroker();
-            var callback = new MyServiceCallback(eventBroker);
-            var proxy = new MyServiceClinet(new InstanceContext(callback));
+            var proxy = new MyServiceClinet();
 
-            eventBroker.Subscribe<TrippleReturned>(d => AgeBox.Text = d.TrippleValue.ToString());
+            _eventBroker.Subscribe<TrippleReturned>(d => AgeBox.Text = d.TrippleValue.ToString());
             var age = await proxy.GetAgeAsync();
             AgeBox.Text = age.DoubledValue.ToString();
         }

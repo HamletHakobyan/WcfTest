@@ -10,12 +10,8 @@ using WcfTest.Contracts.Service;
 
 namespace WcfTest.Clinet
 {
-    public class MyServiceClinet : DuplexClientBase<IMyService>, IMyService
+    public class MyServiceClinet : ClientBase<IMyService>, IMyService
     {
-        public MyServiceClinet(InstanceContext context) : base(context)
-        {
-            
-        }
         public Task<DoubleReturned> GetAgeAsync()
         {
             return Channel.GetAgeAsync();

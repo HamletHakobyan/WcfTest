@@ -5,7 +5,7 @@ using WcfTest.Contracts.Data;
 namespace WcfTest.Contracts.Service
 {
     [ServiceContract]
-    public interface IMyServiceCallback
+    public interface IEventHandler
     {
         [OperationContract]
         void Publish(string typeFullName, EventDataBase trippleReturned);

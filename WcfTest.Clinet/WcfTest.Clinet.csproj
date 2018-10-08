@@ -42,8 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Callbacks\EventBroker.cs" />
     <Compile Include="Callbacks\IEventBroker.cs" />
-    <Compile Include="Callbacks\MyServiceCallback.cs" />
+    <Compile Include="Callbacks\ServiceEventHandler.cs" />
+    <Compile Include="EventSourceClient.cs" />
     <Compile Include="MyServiceClinet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
