@@ -3,7 +3,7 @@
 namespace WcfTest.Contracts.Data
 {
     [DataContract]
-    public class DoubleReturned : EventDataBase
+    public class DoubleReturned
     {
         [DataMember]
         public int DoubledValue { get; set; }

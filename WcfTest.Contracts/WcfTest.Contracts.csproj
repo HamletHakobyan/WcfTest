@@ -44,10 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DoubleReturned.cs" />
-    <Compile Include="Data\EventDataBase.cs" />
+    <Compile Include="Data\NeedData.cs" />
     <Compile Include="Data\TrippleReturned.cs" />
     <Compile Include="Service\IEventHandlerSource.cs" />
-    <Compile Include="Service\IEventPublisher.cs" />
+    <Compile Include="Service\IEventSubscriber.cs" />
     <Compile Include="Service\IMyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\IEventHandler.cs" />

@@ -1,8 +1,7 @@
 ﻿using System.ServiceModel;
-using WcfTest.Clinet.Callbacks;
 using WcfTest.Contracts.Service;
 
-namespace WcfTest.Clinet
+namespace WcfTest.Clinet.Callbacks
 {
     public class EventHandlerRegistrarClient : DuplexClientBase<IEventHandlerRegistrar>, IEventHandlerRegistrar
     {

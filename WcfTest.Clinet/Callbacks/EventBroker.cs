@@ -1,25 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Linq;
+using System.Reflection;
 using WcfTest.Contracts.Data;
 using WcfTest.Contracts.Service;
 
 namespace WcfTest.Clinet.Callbacks
 {
-    public class EventBroker : IEventBroker
+    public class EventBroker : IEventHandler, IEventSubscriber
     {
-        private readonly List<Delegate> _subscribers = new List<Delegate>();
-        public void Publish<T>(T @event) where T : EventDataBase
+        private readonly Dictionary<Type, List<Delegate>> _actionsStore = new Dictionary<Type, List<Delegate>>();
+        private readonly Dictionary<Type, Delegate> _functionStore = new Dictionary<Type, Delegate>();
+        public EventBroker()
         {
-            foreach (var action in _subscribers.OfType<Action<T>>())
+            new EventHandlerRegistrarClient(this).Register();
+        }
+
+        public void PublishDoubleReturned(DoubleReturned doubleReturned)
+        {
+            var actions = _actionsStore[typeof(DoubleReturned)];
+            if (actions == null)
             {
-                action(@event);
+                return;
+            }
+
+            foreach (var action in actions.OfType<Action<DoubleReturned>>())
+            {
+                action(doubleReturned);
             }
         }
 
-        public void Subscribe<T>(Action<T> action) where T : EventDataBase
+        public void PublishTrippleReturned(TrippleReturned trippleReturned)
         {
-            _subscribers.Add(action);
+            var actions = _actionsStore[typeof(TrippleReturned)];
+            if (actions == null)
+            {
+                return;
+            }
+
+            foreach (var action in actions.OfType<Action<TrippleReturned>>())
+            {
+                action(trippleReturned);
+            }
+        }
+
+        public string PublishNeedData(NeedData needData)
+        {
+            return ((Func<NeedData, string>)_functionStore[typeof(NeedData)])(needData);
+        }
+
+        public void Subscribe<T>(Action<T> action)
+        {
+            var type = typeof(T);
+            if (!_actionsStore.ContainsKey(type))
+            {
+                _actionsStore.Add(type, new List<Delegate>());
+            }
+
+            _actionsStore[type].Add(action);
+        }
+
+        public void Subscribe<T, U>(Func<T, U> func)
+        {
+            _functionStore[typeof(T)] = func;
         }
     }
 }

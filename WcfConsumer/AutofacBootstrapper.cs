@@ -10,12 +10,10 @@ namespace WcfConsumer
         public static IContainer GetContainer()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<EventHandler>()
+            builder.RegisterType<EventBroker>()
                 .AsSelf()
                 .As<IEventHandler>()
-                .SingleInstance();
-            builder.RegisterType<EventBroker>()
-                .As<IEventBroker>()
+                .As<IEventSubscriber>()
                 .SingleInstance();
             builder.RegisterType<EventHandlerRegistrarClient>()
                 .As<IEventHandlerRegistrar>()

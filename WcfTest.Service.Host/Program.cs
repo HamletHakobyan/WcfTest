@@ -21,7 +21,7 @@ namespace WcfTest.Service.Host
                 .As<IEventHandlerSource>()
                 .As<IEventHandlerRegistrar>()
                 .SingleInstance();
-            builder.RegisterType<EventPublisher>().As<IEventPublisher>();
+            builder.RegisterType<EventHandler>().As<IEventHandler>();
             var container = builder.Build();
             var host = new ServiceHost(typeof(MyService));
             host.AddDependencyInjectionBehavior(typeof(MyService),container);

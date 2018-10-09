@@ -13,20 +13,27 @@ namespace WcfConsumer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly IEventBroker _eventBroker;
+        private readonly IEventSubscriber _eventSubscriber;
         public MainWindow()
         {
-            _eventBroker = AutofacBootstrapper.GetContainer().Resolve<EventHandler>().Broker;
+            _eventSubscriber = AutofacBootstrapper.GetContainer().Resolve<IEventSubscriber>();
 
             InitializeComponent();
         }
 
         private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            var proxy = new MyServiceClinet();
+            _eventSubscriber.Subscribe<TrippleReturned>(t => AgeBox.Text = t.TrippleValue.ToString());
+            _eventSubscriber.Subscribe<DoubleReturned>(d => AgeBox.Text = d.DoubledValue.ToString());
+            _eventSubscriber.Subscribe<DoubleReturned>(d => OtherBox.Text = d.DoubledValue.ToString() + d.DoubledValue.ToString());
+            _eventSubscriber.Subscribe((NeedData d) => d.InputData + d.InputData);
 
-            _eventBroker.Subscribe<TrippleReturned>(d => AgeBox.Text = d.TrippleValue.ToString());
-            var age = await proxy.GetAgeAsync();
+            DoubleReturned age;
+            using (var proxy = new MyServiceClinet())
+            {
+                age = await proxy.GetAgeAsync();
+            }
+            
             AgeBox.Text = age.DoubledValue.ToString();
         }
     }

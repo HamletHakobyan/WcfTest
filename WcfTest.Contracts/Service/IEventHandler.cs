@@ -4,9 +4,14 @@ using WcfTest.Contracts.Data;
 
 namespace WcfTest.Contracts.Service
 {
+    [ServiceContract]
     public interface IEventHandler
     {
         [OperationContract]
-        void Publish(string typeFullName, EventDataBase trippleReturned);
+        void PublishDoubleReturned(DoubleReturned doubleReturned);
+        [OperationContract]
+        void PublishTrippleReturned(TrippleReturned trippleReturned);
+        [OperationContract]
+        string PublishNeedData(NeedData needData);
     }
 }

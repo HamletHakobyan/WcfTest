@@ -3,8 +3,8 @@
 namespace WcfTest.Contracts.Data
 {
     [DataContract]
-    public class TrippleReturned : EventDataBase
-    {
+    public class TrippleReturned
+    { 
         [DataMember]
         public int TrippleValue { get; set; }
     }

@@ -8,17 +8,18 @@ namespace WcfTest.Service
 {
     public class MyService : IMyService
     {
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IEventHandler _eventHandler;
 
-        public MyService(IEventPublisher eventPublisher)
+        public MyService(IEventHandler eventHandler)
         {
-            _eventPublisher = eventPublisher;
+            _eventHandler = eventHandler;
         }
 
 
         public async Task<DoubleReturned> GetAgeAsync()
         {
-            _eventPublisher.Publish(new TrippleReturned{TrippleValue = 500});
+            var str =_eventHandler.PublishNeedData(new NeedData {InputData = "abc"});
+            _eventHandler.PublishDoubleReturned(new DoubleReturned{DoubledValue = str.Length});
             OperationContext.Current.OperationCompleted += Current_OperationCompleted;
             await Task.Delay(2000);
             return new DoubleReturned{DoubledValue = 84};
@@ -27,7 +28,7 @@ namespace WcfTest.Service
         private async void Current_OperationCompleted(object sender, EventArgs e)
         {
             await Task.Delay(2000);
-            _eventPublisher.Publish(new TrippleReturned { TrippleValue = 3 * 42 });
+            _eventHandler.PublishTrippleReturned(new TrippleReturned { TrippleValue = 3 * 500 });
         }
 
    }
