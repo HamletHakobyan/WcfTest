@@ -8,11 +8,11 @@ namespace WcfTest.Clinet.Callbacks
         public EventHandlerRegistrarClient(IEventHandler eventHandler)
             : base(new InstanceContext(eventHandler))
         {
-            Channel.Register();
         }
 
         public void Register()
         {
+            Channel.Register();
         }
     }
 }

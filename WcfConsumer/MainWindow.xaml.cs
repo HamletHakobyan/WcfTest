@@ -1,4 +1,7 @@
-﻿using System.ServiceModel;
+﻿using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+using System.Security.Principal;
+using System.ServiceModel;
 using System.Windows;
 using Autofac;
 using WcfTest.Clinet;
@@ -35,6 +38,28 @@ namespace WcfConsumer
             }
             
             AgeBox.Text = age.DoubledValue.ToString();
+        }
+
+        private async void GetName_Click(object sender, RoutedEventArgs e)
+        {
+            using (var proxy = new MyServiceClinet())
+            {
+                AgeBox.Text = await proxy.GetName();
+            }
+        }
+
+        const string KERNEL32 = "kernel32.dll";
+        [DllImport(KERNEL32, CharSet = CharSet.Auto, SetLastError = true)]
+        [ResourceExposure(ResourceScope.Process)]
+        internal static extern uint GetCurrentProcessId();
+        private async void GetImpersonatedName_Click(object sender, RoutedEventArgs e)
+        {
+
+            using (WindowsIdentity.GetCurrent().Impersonate())
+            using (var proxy = new MyServiceClinet())
+            {
+                OtherBox.Text = await proxy.GetImpersonatedName((int)GetCurrentProcessId());
+            }
         }
     }
 }

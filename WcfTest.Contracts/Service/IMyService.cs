@@ -9,5 +9,10 @@ namespace WcfTest.Contracts.Service
     {
         [OperationContract]
         Task<DoubleReturned> GetAgeAsync();
+        [OperationContract]
+        Task<string> GetName();
+        [OperationContract]
+        Task<string> GetImpersonatedName(int processId);
+
     }
 }

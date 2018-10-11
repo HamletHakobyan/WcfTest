@@ -11,13 +11,11 @@ namespace WcfConsumer
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<EventBroker>()
-                .AsSelf()
-                .As<IEventHandler>()
                 .As<IEventSubscriber>()
                 .SingleInstance();
-            builder.RegisterType<EventHandlerRegistrarClient>()
-                .As<IEventHandlerRegistrar>()
-                .SingleInstance();
+            //builder.RegisterType<EventHandlerRegistrarClient>()
+            //    .As<IEventHandlerRegistrar>()
+            //    .SingleInstance();
 
             return builder.Build();
         }
