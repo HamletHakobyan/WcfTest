@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Principal;
@@ -48,7 +49,8 @@ namespace WcfTest.Service
         private string GetData()
         {
             string regData = "<ERROR>";
-            if(NativeMethods.ERROR_SUCCESS == NativeMethods.RegOpenCurrentUser(NativeMethods.KEY_ALL_ACCESS, out SafeRegistryHandle registryHandle))
+            string text = "<ERROR>";
+            if (NativeMethods.ERROR_SUCCESS == NativeMethods.RegOpenCurrentUser(NativeMethods.KEY_ALL_ACCESS, out SafeRegistryHandle registryHandle))
             {
                 try
                 {
@@ -63,7 +65,15 @@ namespace WcfTest.Service
             }
 
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            return $"{WindowsIdentity.GetCurrent().Name} - {path} - {regData}";
+            try
+            {
+                text = File.ReadAllText(Path.Combine(path, "a.txt"));
+            }
+            catch
+            {
+            }
+
+            return $"{WindowsIdentity.GetCurrent().Name} - {path} - {regData} - {text}";
         }
 
         public Task<string> GetName()

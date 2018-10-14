@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Autofac.Integration.Wcf;
 using System.Collections.Generic;
 using System.ServiceModel;
@@ -56,6 +57,14 @@ namespace WcfTest.Service.Host
             // 
             this.ServiceName = "WcfServiceHost";
 
+        }
+
+        public void RunAsConsole(string[] args)
+        {
+            OnStart(args);
+            Console.WriteLine("Service started. Press Enter to stop.");
+            Console.ReadLine();
+            OnStop();
         }
     }
 }

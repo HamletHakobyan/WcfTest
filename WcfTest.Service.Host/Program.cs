@@ -15,7 +15,15 @@ namespace WcfTest.Service.Host
     {
         static void Main(string[] args)
         {
-            ServiceBase.Run(new WcfServiceHost(args));
+            var service = new WcfServiceHost(args);
+            if (Environment.UserInteractive)
+            {
+                service.RunAsConsole(args);
+            }
+            else
+            {
+            ServiceBase.Run(service);
+            }
         }
     }
 }
