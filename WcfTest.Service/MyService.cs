@@ -32,24 +32,49 @@ namespace WcfTest.Service
             return new DoubleReturned{DoubledValue = 84};
         }
 
+        [OperationBehavior(Impersonation = ImpersonationOption.Required)]
+        public Task<string> GetAttrImpersonationData()
+        {
+            var windowsIdentity = WindowsIdentity.GetCurrent(TokenAccessLevels.AllAccess);
+            using (windowsIdentity.Impersonate())
+            {
+                var securityIdentifier = ((SecurityIdentifier)WindowsIdentity.GetCurrent().User.Translate(typeof(SecurityIdentifier))).ToString();
+                string regData;
+                using (var key = Registry.Users.OpenSubKey(securityIdentifier + @"\Software\Microsoft\Windows\CurrentVersion\Abc"))
+                {
+                    regData = (string)key?.GetValue("Name") ?? "<ERROR>";
+                }
+
+                string regData1;
+                var sid = "S-1-5-80-2381143654-2257828965-1688554798-2842969470-1205468836";
+                using (var key = Registry.Users.OpenSubKey(sid + @"\Environment"))
+                {
+                    regData1 = (string)key?.GetValue("Path") ?? "<ERROR>";
+                }
+
+                var txt = $"{WindowsIdentity.GetCurrent().Name} - {GetRegData()} - {GetDataFile()} - {regData} - {regData1}";
+                return Task.FromResult(txt);
+            }
+        }
+
         public Task<string> GetImpersonatedName(int processId)
         {
             SafeProcessHandle processHandle = NativeMethods.OpenProcess(NativeMethods.PROCESS_QUERY_INFORMATION, false, (int)processId);
             SafeAccessTokenHandle tokenHandle;
-            NativeMethods.OpenProcessToken(processHandle.DangerousGetHandle(), NativeMethods.TokenAccessLevels.AllAccess, out tokenHandle);
+            NativeMethods.OpenProcessToken(processHandle.DangerousGetHandle(), TokenAccessLevels.AllAccess, out tokenHandle);
             using (WindowsIdentity newId = new WindowsIdentity(tokenHandle.DangerousGetHandle()))
             {
-                using (WindowsImpersonationContext impersonatedUser = newId.Impersonate())
+                using (newId.Impersonate())
                 {
-                    return Task.FromResult(GetData());
+                    var txt = $"{WindowsIdentity.GetCurrent().Name} - {GetRegData()} - {GetDataFile()}";
+                    return Task.FromResult(txt);
                 }
             }
         }
 
-        private string GetData()
+        private string GetRegData()
         {
             string regData = "<ERROR>";
-            string text = "<ERROR>";
             if (NativeMethods.ERROR_SUCCESS == NativeMethods.RegOpenCurrentUser(NativeMethods.KEY_ALL_ACCESS, out SafeRegistryHandle registryHandle))
             {
                 try
@@ -64,6 +89,12 @@ namespace WcfTest.Service
                 catch { }
             }
 
+            return regData;
+        }
+
+        private string GetDataFile()
+        {
+            string text = "<ERROR>";
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             try
             {
@@ -73,12 +104,13 @@ namespace WcfTest.Service
             {
             }
 
-            return $"{WindowsIdentity.GetCurrent().Name} - {path} - {regData} - {text}";
+            return text;
         }
 
         public Task<string> GetName()
         {
-            return Task.FromResult(GetData());
+            var txt = $"{WindowsIdentity.GetCurrent().Name} - {GetRegData()} - {GetDataFile()}";
+            return Task.FromResult(txt);
         }
 
         private async void Current_OperationCompleted(object sender, EventArgs e)
@@ -130,37 +162,37 @@ namespace WcfTest.Service
         [ResourceExposure(ResourceScope.None)]
         public static extern SafeProcessHandle OpenProcess(int access, bool inherit, int processId);
 
-        [Serializable]
-        [Flags]
-        [System.Runtime.InteropServices.ComVisible(true)]
-        public enum TokenAccessLevels
-        {
-            AssignPrimary = 0x00000001,
-            Duplicate = 0x00000002,
-            Impersonate = 0x00000004,
-            Query = 0x00000008,
-            QuerySource = 0x00000010,
-            AdjustPrivileges = 0x00000020,
-            AdjustGroups = 0x00000040,
-            AdjustDefault = 0x00000080,
-            AdjustSessionId = 0x00000100,
+        //[Serializable]
+        //[Flags]
+        //[System.Runtime.InteropServices.ComVisible(true)]
+        //public enum TokenAccessLevels
+        //{
+        //    AssignPrimary = 0x00000001,
+        //    Duplicate = 0x00000002,
+        //    Impersonate = 0x00000004,
+        //    Query = 0x00000008,
+        //    QuerySource = 0x00000010,
+        //    AdjustPrivileges = 0x00000020,
+        //    AdjustGroups = 0x00000040,
+        //    AdjustDefault = 0x00000080,
+        //    AdjustSessionId = 0x00000100,
 
-            Read = 0x00020000 | Query,
+        //    Read = 0x00020000 | Query,
 
-            Write = 0x00020000 | AdjustPrivileges | AdjustGroups | AdjustDefault,
+        //    Write = 0x00020000 | AdjustPrivileges | AdjustGroups | AdjustDefault,
 
-            AllAccess = 0x000F0000 |
-                                  AssignPrimary |
-                                  Duplicate |
-                                  Impersonate |
-                                  Query |
-                                  QuerySource |
-                                  AdjustPrivileges |
-                                  AdjustGroups |
-                                  AdjustDefault |
-                                  AdjustSessionId,
+        //    AllAccess = 0x000F0000 |
+        //                          AssignPrimary |
+        //                          Duplicate |
+        //                          Impersonate |
+        //                          Query |
+        //                          QuerySource |
+        //                          AdjustPrivileges |
+        //                          AdjustGroups |
+        //                          AdjustDefault |
+        //                          AdjustSessionId,
 
-            MaximumAllowed = 0x02000000
-        }
+        //    MaximumAllowed = 0x02000000
+        //}
     }
 }

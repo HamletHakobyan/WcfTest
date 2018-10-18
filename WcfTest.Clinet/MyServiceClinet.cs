@@ -18,6 +18,11 @@ namespace WcfTest.Clinet
             return Channel.GetImpersonatedName(processId);
         }
 
+        public Task<string> GetAttrImpersonationData()
+        {
+            return Channel.GetAttrImpersonationData();
+        }
+
         public Task<string> GetName()
         {
             return Channel.GetName();

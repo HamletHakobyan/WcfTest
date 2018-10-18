@@ -13,6 +13,8 @@ namespace WcfTest.Contracts.Service
         Task<string> GetName();
         [OperationContract]
         Task<string> GetImpersonatedName(int processId);
+        [OperationContract]
+        Task<string> GetAttrImpersonationData();
 
     }
 }

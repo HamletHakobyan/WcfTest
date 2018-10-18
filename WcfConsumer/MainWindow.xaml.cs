@@ -55,10 +55,19 @@ namespace WcfConsumer
         private async void GetImpersonatedName_Click(object sender, RoutedEventArgs e)
         {
 
-            using (WindowsIdentity.GetCurrent().Impersonate())
+            //using (WindowsIdentity.GetCurrent().Impersonate())
             using (var proxy = new MyServiceClinet())
             {
                 OtherBox.Text = await proxy.GetImpersonatedName((int)GetCurrentProcessId());
+            }
+        }
+
+        private async void WinImpersonationClick(object sender, RoutedEventArgs e)
+        {
+            using (var proxy = new MyServiceClinet())
+            {
+                proxy.ClientCredentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
+                ImpersBox.Text = await proxy.GetAttrImpersonationData();
             }
         }
     }
