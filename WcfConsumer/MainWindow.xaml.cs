@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Principal;
 using System.ServiceModel;
@@ -20,6 +21,16 @@ namespace WcfConsumer
         public MainWindow()
         {
             _eventSubscriber = AutofacBootstrapper.GetContainer().Resolve<IEventSubscriber>();
+            using (var proxy = new ImpersonationProviderClient())
+            {
+                var proxyClientCredentials = proxy.ClientCredentials;
+                if (proxyClientCredentials != null)
+                {
+                    proxyClientCredentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
+                }
+
+                proxy.SetImpersonationContext();
+            }
 
             InitializeComponent();
         }
@@ -66,8 +77,16 @@ namespace WcfConsumer
         {
             using (var proxy = new MyServiceClinet())
             {
-                proxy.ClientCredentials.Windows.AllowedImpersonationLevel = TokenImpersonationLevel.Impersonation;
-                ImpersBox.Text = await proxy.GetAttrImpersonationData();
+                try
+                {
+                    ImpersBox.Text = await proxy.GetAttrImpersonationData();
+
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    proxy.Abort();
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceProcess;
 using WcfTest.Contracts.Service;
+using WcfTest.Service.Infrastructure;
 
 namespace WcfTest.Service.Host
 {
@@ -16,13 +17,24 @@ namespace WcfTest.Service.Host
         {
             InitializeComponent();
             var builder = new ContainerBuilder();
-            builder.RegisterType<MyService>().AsSelf();
+            builder.RegisterType<MyService>().AsSelf().SingleInstance();
+            builder.RegisterType<ImpersonationService>()
+                .AsSelf()
+                .SingleInstance()
+                .ExternallyOwned()
+                .As<IImpersonationProvider>()
+                .SingleInstance()
+                .ExternallyOwned()
+                .As<IImpersonationService>()
+                .SingleInstance()
+                .ExternallyOwned();
             builder.RegisterType<EventHandlerSource>()
                 .AsSelf()
                 .As<IEventHandlerSource>()
                 .As<IEventHandlerRegistrar>()
                 .SingleInstance();
-            builder.RegisterType<EventHandler>().As<IEventHandler>();
+            builder.RegisterType<EventHandler>()
+                .As<IEventHandler>();
             _container = builder.Build();
             _serviceHosts = new List<ServiceHost>();
         }
@@ -35,6 +47,10 @@ namespace WcfTest.Service.Host
             _serviceHosts.Add(host);
             host = new ServiceHost(typeof(EventHandlerSource));
             host.AddDependencyInjectionBehavior(typeof(EventHandlerSource), _container);
+            host.Open();
+            _serviceHosts.Add(host);
+            host = new ServiceHost(typeof(ImpersonationService));
+            host.AddDependencyInjectionBehavior(typeof(ImpersonationService), _container);
             host.Open();
             _serviceHosts.Add(host);
 

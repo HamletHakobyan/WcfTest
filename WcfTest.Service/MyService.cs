@@ -9,16 +9,19 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using WcfTest.Contracts.Data;
 using WcfTest.Contracts.Service;
+using WcfTest.Service.Infrastructure;
 
 namespace WcfTest.Service
 {
-    public class MyService : IMyService
+    public class MyService : IMyService, IDisposable
     {
         private readonly IEventHandler _eventHandler;
+        private readonly IImpersonationService _impersonationService;
 
-        public MyService(IEventHandler eventHandler)
+        public MyService(IEventHandler eventHandler, IImpersonationService impersonationService)
         {
             _eventHandler = eventHandler;
+            _impersonationService = impersonationService;
         }
 
 
@@ -32,29 +35,37 @@ namespace WcfTest.Service
             return new DoubleReturned{DoubledValue = 84};
         }
 
-        [OperationBehavior(Impersonation = ImpersonationOption.Required)]
         public Task<string> GetAttrImpersonationData()
         {
-            var windowsIdentity = WindowsIdentity.GetCurrent(TokenAccessLevels.AllAccess);
-            using (windowsIdentity.Impersonate())
+            return _impersonationService.RunInContext(() =>
             {
-                var securityIdentifier = ((SecurityIdentifier)WindowsIdentity.GetCurrent().User.Translate(typeof(SecurityIdentifier))).ToString();
+                var securityIdentifier =
+                    ((SecurityIdentifier) WindowsIdentity.GetCurrent().User.Translate(typeof(SecurityIdentifier)))
+                    .ToString();
                 string regData;
-                using (var key = Registry.Users.OpenSubKey(securityIdentifier + @"\Software\Microsoft\Windows\CurrentVersion\Abc"))
+                using (var key =
+                    Registry.Users.OpenSubKey(securityIdentifier + @"\Software\Microsoft\Windows\CurrentVersion\Abc"))
                 {
-                    regData = (string)key?.GetValue("Name") ?? "<ERROR>";
+                    regData = (string) key?.GetValue("Name") ?? "<ERROR>";
                 }
 
                 string regData1;
                 var sid = "S-1-5-80-2381143654-2257828965-1688554798-2842969470-1205468836";
                 using (var key = Registry.Users.OpenSubKey(sid + @"\Environment"))
                 {
-                    regData1 = (string)key?.GetValue("Path") ?? "<ERROR>";
+                    regData1 = (string) key?.GetValue("Path") ?? "<ERROR>";
                 }
 
-                var txt = $"{WindowsIdentity.GetCurrent().Name} - {GetRegData()} - {GetDataFile()} - {regData} - {regData1}";
+                string regData2;
+                using (var key = Registry.CurrentUser.OpenSubKey(@"\Software\Microsoft\Windows\CurrentVersion\Abc", RegistryKeyPermissionCheck.ReadSubTree))
+                {
+                    regData2 = (string) key?.GetValue("Name") ?? "<ERROR>";
+                }
+
+                var txt =
+                    $"{WindowsIdentity.GetCurrent().Name} - {GetRegData()} - {GetDataFile()} - {regData} - {regData1} - {regData2}";
                 return Task.FromResult(txt);
-            }
+            });
         }
 
         public Task<string> GetImpersonatedName(int processId)
@@ -119,6 +130,10 @@ namespace WcfTest.Service
             _eventHandler.PublishTrippleReturned(new TrippleReturned { TrippleValue = 3 * 500 });
         }
 
+        public void Dispose()
+        {
+            (_impersonationService as IDisposable)?.Dispose();
+        }
     }
 
 

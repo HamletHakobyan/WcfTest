@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Callbacks\EventBroker.cs" />
     <Compile Include="Callbacks\EventHandlerRegistrarClient.cs" />
+    <Compile Include="ImpersonationProviderClient.cs" />
     <Compile Include="MyServiceClinet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

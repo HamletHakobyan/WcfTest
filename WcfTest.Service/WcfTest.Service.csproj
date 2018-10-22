@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="EventHandler.cs" />
     <Compile Include="EventHandlerSource.cs" />
+    <Compile Include="ImpersonationService.cs" />
+    <Compile Include="Infrastructure\IImpersonationService.cs" />
     <Compile Include="MyService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
